@@ -44,12 +44,15 @@
         </div>
         <div class="first-page-curtain first-page-curtain-over" v-show="step===4"></div>
         <audio :src="song" id="audio1" @ended="overAudio1"></audio>
+        <transition name="fade">
+          <div class="wait-video page-base"
+               v-show="downloadFlag===false&&audioFinish===true"></div>
+        </transition>
       </div>
       <!--第二页结束-->
       <!--第二个视频开始-->
       <div class="dog-video detail-dog page-base" v-show="step===4||step===5" style="z-index: 700">
-        <!--<video id="randomVideo" class="page-base" :src="randomVideo"></video>-->
-        <video id="randomVideo" class="page-base" :src="randomVideo"></video>
+        <video id="randomVideo" class="page-base" ref="videos"></video>
       </div>
       <!--第二个视频结束-->
       <!--狗年总结开始-->
@@ -112,10 +115,12 @@
     name: 'index',
     data() {
       return {
-        step: 4,//当前动画进行到第几步
+        step: 0,//当前动画进行到第几步
         song: require('./img/luosheng.mp3'),//锣声
         dogVideo: require('./img/dog_video.mp4'),
-        randomVideo: require('./img/jia_ri_gan.mp4'),
+        randomVideo: '',
+        downloadFlag: false,
+        audioFinish: false,
         pigVideo: require('./img/pig_video.mp4'),
         dogResultImg: '',
         pigResultImg: '',
@@ -192,23 +197,30 @@
           ThreeTiaoZiLst: ["此年需要负责的事情容易成倍多，也有好机会增加自己的名声。", "此年容易学习多方面的冷门知识，也易接触神秘知识；也容易拜多人为师。", "此年容易工作踏实，能和领导搞好关系，但得通过钱财的方式。"],
           AllDuanYuLst: ["坤造八字:壬戌年 戊申月 甲子日 辛未时 的甲辰大运，戊戌(2018)流年的批断内容:\u0000", "如有重复内容，则此项当年发生的可能性非常大，请着重注意此项内容\u0000", "1,此年自己的专业技术会得到提升，也利于考学、办理执照等事情。也容易得到长辈的关爱。此年重视精神生活。\u0000", "2,流年重点:此年对工作很是用心，容易对工作付出多，和领导的关系也不错，利用物质的方式和领导搞好关系，容易对自己的事业、地位的提升有好处。\u0000", "3,流年重点:财星动，此年有一定的钱财机会。\u0000", "4,流年重点:此年要格外注意因为自己糊涂，或者被他人忽悠蒙蔽，或者自己大意，比如看不见、看错某些安全提示信息，而导致的意外灾厄！长辈也要防意外之厄！自己的住所、车辆等也容易有损坏等事！\u0000", "5,流年重点:想要孩子的此年容易有怀孕或生孩子之事。未婚者需要谨慎于与异性的接触，否则容易有意外怀孕之事。\u0000", "6,流年重点:此年容易为了挣钱而撇家舍业，也容易因为对钱财看得重而做一些不利与自己的健康的事情，甚至容易为了钱财而做有些突破道德事情。此年也需要注意长辈健康。\u0000", "7,流年重点:此年自己在知识，思想，研究内容等方面，容易发生大的变化，容易开始涉足新的知识领域，居住环境也容易大变化，工作环境也存在变化的可能！\u0000", "8,流年重点:此年在生意成交上要注意是非口舌之事，容易为了钱财，合同额等有一些波折，难谈之事！\u0000", "9,流年重点:此年要着重注意父亲的健康状况，重要！也要注意手术之事。\u0000", "10,流年重点:此年要着重注意母亲的健康状况！也要注意磕碰、流血等事。\u0000", "11,流年重点:重点：此年要注意孝服之事！\u0000", "12,此年容易突然有人给自己增加很多的工作量，让自己负责的事情成倍增加，利于自己名声的培养。\u0000", "13,此年容易开始学习、研究某些方面的冷门专业知识、技术等；也容易对神秘知识(宗教、数术等)产生学习兴趣，是一个涉猎广泛的年份。\u0000", "14,此年是一个和领导搞好关系的好年；上班的人，可以为自己的领导多付出，甚至是送礼之类的；从商的人也可以和辖区官员沟通好关系；但是也要防止被管理者扣钱、罚款的事情\u0000", "15,此年命主容易和人展开事业上的合作,事业上有大的发展之机。\u0000", "16,重点：此年容易因为面临的棘手问题，遇到的麻烦事，繁重的职责等因素，加紧学习、考证，或者容易找靠山化解自己的难题。此年工作中面临的文书工作不少，如投标等。\u0000", "17,重点：此年容易因为研究、学习、取证等因素，加紧学业，看更多的书，学更多的知识。\u0000", "18,重点：此年容易拿钱去学习，或者用钱购买一些证件，证书等，也容易购车、房、家居物品等。\u0000", "19,重点：此年容易因为感到自己经常遇到一些让自己很不爽的、工作和生活中的阻碍、竞争之事，而想通过学习、咨询等方式找到这种不顺和阻碍的答案。是一种不甘落后的表现，希望自己更加的进步而有了上进、学习之心。\u0000", "20,上班的命主，此年有升职、找到好工作的机遇！\u0000", "21,此年命主父亲容易有生病住院之事。\u0000", "22,此年命主父亲容易有官司是非之事。\u0000", "23,此年男性长辈健康不利，容易有身体疼痛难安之事，或者容易有心理难受之事。此年做生意的人容易生意业务改变！\u0000", "24,命主此年容易有不错的发财机会，努力争取会有不错的收获。\u0000", "25,重点提示：逢羊月（农历六月）或其前后、马月（农历五月）或其前后的月份容易有发财、升薪水等好事。\u0000", "26,此年事业至上有高升之象,未婚者恋爱顺利，已婚者感情稳定。\u0000", "27,此年长辈有一定的不利，许多注意身体健康。\u0000", "28,此年钱财容易有大的花费，破耗;此年宜多购置物品，不宜积攒钱财。\u0000", "29,此年虽然钱财有花费，但也有钱财机遇，务必好好争取。\u0000", "\u0000"]
         };
-        switch (this.dogData.LiuShuZhi) {
+        switch (this.dogData.RiZhu) {
           case "甲":
-            // this.$refs.videos.src = './img/jia_ri_gan.mp4';
-            // this.randomVideo = require('./img/pig_video.mp4');
-            // document.getElementById('randomVideo').load();
-            // this.loadVideo(require('./img/jia_ri_gan.mp4'));
+            this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+            break;
+          case "乙":
+            this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+            break;
+          case "丙":
+            this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
             break;
         }
       },
       //加载随机视频
       loadVideo: function (video) {
-        // this.randomVideo = video;
-        // let V = new Audio(video);
-        // V.onloadedmetadata = function () {
-        //   // that.step =
-        //   //锣声 响完就放视频
-        // };
+        let V = new Audio(video);
+        let that = this;
+        V.onloadedmetadata = function () {
+          //判断是否要执行下一步
+          that.downloadFlag = true;
+          that.$refs.videos.src = V.src;
+          if (that.audioFinish === true && that.downloadFlag === true) {
+            that.nextStep1();
+          }
+        };
       },
       //加载界面过渡到第一页
       nextStep() {
@@ -234,18 +246,26 @@
           that.step = 4;
         })
       },
-      //播放锣声
+      //第二次播放锣声
       playSong1() {
         if (this.sex === '' || this.birthday === '' || this.location === '') {
           return;
         }
+        document.getElementById('audio1').play();
         //获取数据
         this.getDogData();
-        document.getElementById('audio1').play()
       },
-      //锣声播放完毕，下一场景
+      //第二次锣声播放完毕，下一场景
       overAudio1() {
         document.getElementById('audio1').pause();
+        this.audioFinish = true;
+        if (this.audioFinish === true && this.downloadFlag === true) {
+          this.nextStep1();
+        }
+      },
+      //音频播放完或视频加载完执行  后完成者触发
+      nextStep1() {
+        this.audioFinish = false;//重置
         this.step = 5;
         let randomVideo = document.getElementById('randomVideo');
         randomVideo.play();
@@ -286,8 +306,7 @@
           //画文本
           that.drawText(text,
             ctx, multiple
-          )
-          ;
+          );
           //画二维码
           let qrcode = new Image();
           qrcode.src = require('./img/qrcode.png');
