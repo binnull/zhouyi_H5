@@ -34,9 +34,9 @@
         <div class="page-base first-page-front"></div>
         <div class="input-group">
           <div class="input-bg">
-            <div class="sex">{{sex}}</div>
-            <div class="birthday">{{birthday}}</div>
-            <div class="location">{{location}}</div>
+            <div class="sex" @click="handelSexClick()">{{sex}}</div>
+            <div class="birthday" @click="handelBirthdayClick()">{{birthday[0]}}.{{birthday[1]}}.{{birthday[2]}}</div>
+            <div class="location" @click="handelLocationClick()">{{location[0]}}&nbsp;{{location[1]}}</div>
           </div>
         </div>
         <div class="btn-bg" @click="playSong1">
@@ -48,6 +48,28 @@
           <div class="wait-video page-base"
                v-show="downloadFlag===false&&audioFinish===true"></div>
         </transition>
+        <van-popup v-model="sexPickerShow" position="bottom">
+          <van-picker show-toolbar :columns="sexList" :visible-item-count="3" @change="onChangeSex" title="性别"
+                      @cancel="handelSexClick"
+                      @confirm="handelSexClick"/>
+        </van-popup>
+        <van-popup v-model="birthPickerShow" position="bottom">
+          <van-datetime-picker
+              v-model="currentDate"
+              type="datetime"
+              :min-date="minDate"
+              :max-date="maxDate"
+              title="出生日期"
+              @change="onChangeBirthday"
+              @cancel="handelBirthdayClick"
+              @confirm="handelBirthdayClick"
+          />
+        </van-popup>
+        <van-popup v-model="locationPickerShow" position="bottom">
+          <van-picker show-toolbar :columns="cityColumns" @change="onChangeCity" title="出生地"
+                      @cancel="handelLocationClick"
+                      @confirm="handelLocationClick"/>
+        </van-popup>
       </div>
       <!--第二页结束-->
       <!--第二个视频开始-->
@@ -111,6 +133,8 @@
 </template>
 
 <script>
+  import city from './img/province-city.json'
+
   export default {
     name: 'index',
     data() {
@@ -125,13 +149,31 @@
         dogResultImg: '',
         pigResultImg: '',
         sex: '男',
-        birthday: '1994.4.1',
-        location: '山东济南',
+        birthday: ['1994', '04', '01', '15', '23'],
+        location: ['安徽', '滨州'],
         model1: false,
         model2: false,
         loadProgress: 0,
         dogData: {},
-        pigData: {}
+        pigData: {},
+        sexPickerShow: false,
+        birthPickerShow: false,
+        locationPickerShow: false,
+        sexList: ['男', '女'],
+        cityColumns: [
+          {
+            values: Object.keys(city),
+            className: 'column1'
+          },
+          {
+            values: city['山东'],
+            className: 'column2',
+            defaultIndex: 2
+          }
+        ],
+        minDate: new Date(1900, 1, 1),
+        maxDate: new Date(),
+        currentDate: new Date()
       }
     },
     created: function () {
@@ -189,6 +231,25 @@
       }
     },
     methods: {
+      handelSexClick() {
+        this.sexPickerShow = !this.sexPickerShow;
+      },
+      handelBirthdayClick() {
+        this.birthPickerShow = !this.birthPickerShow;
+      },
+      handelLocationClick() {
+        this.locationPickerShow = !this.locationPickerShow;
+      },
+      onChangeSex: function (picker, value, index) {
+        this.sex = value;
+      },
+      onChangeBirthday: function (picker) {
+        this.birthday = picker.getValues();
+      },
+      onChangeCity: function (picker, values) {
+        picker.setColumnValues(1, city[values[0]]);
+        this.location = picker.getValues();
+      },
       //获取数据
       getDogData() {
         this.dogData = {

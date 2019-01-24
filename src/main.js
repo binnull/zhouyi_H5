@@ -6,6 +6,13 @@ import routes from './route.config.js';
 import 'lantern-ui/lib/lantern.css';
 import * as vClickOutside from 'v-click-outside-x'
 
+import {Popup, Picker, DatetimePicker} from 'vant';
+import 'vant/lib/index.css';
+
+Vue.use(Popup);
+Vue.use(Picker);
+Vue.use(DatetimePicker);
+
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
