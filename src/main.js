@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import App from './app.vue';
 import VueRouter from 'vue-router';
-import Lantern from 'lantern-ui';
 import routes from './route.config.js';
-import 'lantern-ui/lib/lantern.css';
 import * as vClickOutside from 'v-click-outside-x'
 
 import {Popup, Picker, DatetimePicker} from 'vant';
@@ -18,7 +16,6 @@ import VueAxios from 'vue-axios'
 
 Vue.use(VueAxios, axios);
 Vue.use(VueRouter);
-Vue.use(Lantern);
 Vue.use(vClickOutside);
 
 const router = new VueRouter({
