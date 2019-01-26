@@ -46,7 +46,7 @@
         <audio :src="song" id="audio1" @ended="overAudio1"></audio>
         <transition name="fade">
           <div class="wait-video page-base"
-               v-show="downloadFlag===false&&audioFinish===true"></div>
+               v-show="downloadFlag===false&&audioFinish===true"><img :src="require('./img/black_loading.gif')"/></div>
         </transition>
         <van-popup v-model="sexPickerShow" position="bottom">
           <van-picker show-toolbar :columns="sexList" :visible-item-count="3" @change="onChangeSex" title="性别"
@@ -134,6 +134,10 @@
 
 <script>
   import city from './img/province-city.json'
+  import {
+    executeForecast,
+    getPayForecastTimesParam
+  } from '../../api'
 
   export default {
     name: 'index',
@@ -252,23 +256,53 @@
       },
       //获取数据
       getDogData() {
-        this.dogData = {
-          LiuShuZhi: "85,70,10,88,65,60",
-          RiZhu: "甲",
-          ThreeTiaoZiLst: ["此年需要负责的事情容易成倍多，也有好机会增加自己的名声。", "此年容易学习多方面的冷门知识，也易接触神秘知识；也容易拜多人为师。", "此年容易工作踏实，能和领导搞好关系，但得通过钱财的方式。"],
-          AllDuanYuLst: ["坤造八字:壬戌年 戊申月 甲子日 辛未时 的甲辰大运，戊戌(2018)流年的批断内容:\u0000", "如有重复内容，则此项当年发生的可能性非常大，请着重注意此项内容\u0000", "1,此年自己的专业技术会得到提升，也利于考学、办理执照等事情。也容易得到长辈的关爱。此年重视精神生活。\u0000", "2,流年重点:此年对工作很是用心，容易对工作付出多，和领导的关系也不错，利用物质的方式和领导搞好关系，容易对自己的事业、地位的提升有好处。\u0000", "3,流年重点:财星动，此年有一定的钱财机会。\u0000", "4,流年重点:此年要格外注意因为自己糊涂，或者被他人忽悠蒙蔽，或者自己大意，比如看不见、看错某些安全提示信息，而导致的意外灾厄！长辈也要防意外之厄！自己的住所、车辆等也容易有损坏等事！\u0000", "5,流年重点:想要孩子的此年容易有怀孕或生孩子之事。未婚者需要谨慎于与异性的接触，否则容易有意外怀孕之事。\u0000", "6,流年重点:此年容易为了挣钱而撇家舍业，也容易因为对钱财看得重而做一些不利与自己的健康的事情，甚至容易为了钱财而做有些突破道德事情。此年也需要注意长辈健康。\u0000", "7,流年重点:此年自己在知识，思想，研究内容等方面，容易发生大的变化，容易开始涉足新的知识领域，居住环境也容易大变化，工作环境也存在变化的可能！\u0000", "8,流年重点:此年在生意成交上要注意是非口舌之事，容易为了钱财，合同额等有一些波折，难谈之事！\u0000", "9,流年重点:此年要着重注意父亲的健康状况，重要！也要注意手术之事。\u0000", "10,流年重点:此年要着重注意母亲的健康状况！也要注意磕碰、流血等事。\u0000", "11,流年重点:重点：此年要注意孝服之事！\u0000", "12,此年容易突然有人给自己增加很多的工作量，让自己负责的事情成倍增加，利于自己名声的培养。\u0000", "13,此年容易开始学习、研究某些方面的冷门专业知识、技术等；也容易对神秘知识(宗教、数术等)产生学习兴趣，是一个涉猎广泛的年份。\u0000", "14,此年是一个和领导搞好关系的好年；上班的人，可以为自己的领导多付出，甚至是送礼之类的；从商的人也可以和辖区官员沟通好关系；但是也要防止被管理者扣钱、罚款的事情\u0000", "15,此年命主容易和人展开事业上的合作,事业上有大的发展之机。\u0000", "16,重点：此年容易因为面临的棘手问题，遇到的麻烦事，繁重的职责等因素，加紧学习、考证，或者容易找靠山化解自己的难题。此年工作中面临的文书工作不少，如投标等。\u0000", "17,重点：此年容易因为研究、学习、取证等因素，加紧学业，看更多的书，学更多的知识。\u0000", "18,重点：此年容易拿钱去学习，或者用钱购买一些证件，证书等，也容易购车、房、家居物品等。\u0000", "19,重点：此年容易因为感到自己经常遇到一些让自己很不爽的、工作和生活中的阻碍、竞争之事，而想通过学习、咨询等方式找到这种不顺和阻碍的答案。是一种不甘落后的表现，希望自己更加的进步而有了上进、学习之心。\u0000", "20,上班的命主，此年有升职、找到好工作的机遇！\u0000", "21,此年命主父亲容易有生病住院之事。\u0000", "22,此年命主父亲容易有官司是非之事。\u0000", "23,此年男性长辈健康不利，容易有身体疼痛难安之事，或者容易有心理难受之事。此年做生意的人容易生意业务改变！\u0000", "24,命主此年容易有不错的发财机会，努力争取会有不错的收获。\u0000", "25,重点提示：逢羊月（农历六月）或其前后、马月（农历五月）或其前后的月份容易有发财、升薪水等好事。\u0000", "26,此年事业至上有高升之象,未婚者恋爱顺利，已婚者感情稳定。\u0000", "27,此年长辈有一定的不利，许多注意身体健康。\u0000", "28,此年钱财容易有大的花费，破耗;此年宜多购置物品，不宜积攒钱财。\u0000", "29,此年虽然钱财有花费，但也有钱财机遇，务必好好争取。\u0000", "\u0000"]
-        };
-        switch (this.dogData.RiZhu) {
-          case "甲":
-            this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
-            break;
-          case "乙":
-            this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
-            break;
-          case "丙":
-            this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
-            break;
-        }
+        let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
+        let that = this;
+        let param = new URLSearchParams();
+        param.append('sex', this.sex);
+        param.append('address', this.address);
+        param.append('birthday', birthday);
+        this.axios.post(executeForecast, param)
+          .then(function (response) {
+            if (response.code === 200) {
+              that.dogData = response.data;
+              switch (that.dogData.RiZhu) {
+                case "甲":
+                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "乙":
+                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "丙":
+                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "丁":
+                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "戊":
+                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "己":
+                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "庚":
+                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "辛":
+                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "壬":
+                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+                case "癸":
+                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  break;
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       //加载随机视频
       loadVideo: function (video) {
@@ -464,22 +498,32 @@
         this.step = 7;
         let pigvideo = document.getElementById('pigVideo');
         pigvideo.play();
-        this.pigData = {
-          LiuShuZhi: "85,70,0,88,65,60",
-          RiZhu: "甲",
-          ThreeTiaoZiLst: ["此年需要负责的事情容易成倍多，也有好机会增加自己的名声。", "此年容易学习多方面的冷门知识，也易接触神秘知识；也容易拜多人为师。", "此年容易工作踏实，能和领导搞好关系，但得通过钱财的方式。"],
-          AllDuanYuLst: ["坤造八字:壬戌年 戊申月 甲子日 辛未时 的甲辰大运，戊戌(2018)流年的批断内容:\u0000", "如有重复内容，则此项当年发生的可能性非常大，请着重注意此项内容\u0000", "1,此年自己的专业技术会得到提升，也利于考学、办理执照等事情。也容易得到长辈的关爱。此年重视精神生活。\u0000", "2,流年重点:此年对工作很是用心，容易对工作付出多，和领导的关系也不错，利用物质的方式和领导搞好关系，容易对自己的事业、地位的提升有好处。\u0000", "3,流年重点:财星动，此年有一定的钱财机会。\u0000", "4,流年重点:此年要格外注意因为自己糊涂，或者被他人忽悠蒙蔽，或者自己大意，比如看不见、看错某些安全提示信息，而导致的意外灾厄！长辈也要防意外之厄！自己的住所、车辆等也容易有损坏等事！\u0000", "5,流年重点:想要孩子的此年容易有怀孕或生孩子之事。未婚者需要谨慎于与异性的接触，否则容易有意外怀孕之事。\u0000", "6,流年重点:此年容易为了挣钱而撇家舍业，也容易因为对钱财看得重而做一些不利与自己的健康的事情，甚至容易为了钱财而做有些突破道德事情。此年也需要注意长辈健康。\u0000", "7,流年重点:此年自己在知识，思想，研究内容等方面，容易发生大的变化，容易开始涉足新的知识领域，居住环境也容易大变化，工作环境也存在变化的可能！\u0000", "8,流年重点:此年在生意成交上要注意是非口舌之事，容易为了钱财，合同额等有一些波折，难谈之事！\u0000", "9,流年重点:此年要着重注意父亲的健康状况，重要！也要注意手术之事。\u0000", "10,流年重点:此年要着重注意母亲的健康状况！也要注意磕碰、流血等事。\u0000", "11,流年重点:重点：此年要注意孝服之事！\u0000", "12,此年容易突然有人给自己增加很多的工作量，让自己负责的事情成倍增加，利于自己名声的培养。\u0000", "13,此年容易开始学习、研究某些方面的冷门专业知识、技术等；也容易对神秘知识(宗教、数术等)产生学习兴趣，是一个涉猎广泛的年份。\u0000", "14,此年是一个和领导搞好关系的好年；上班的人，可以为自己的领导多付出，甚至是送礼之类的；从商的人也可以和辖区官员沟通好关系；但是也要防止被管理者扣钱、罚款的事情\u0000", "15,此年命主容易和人展开事业上的合作,事业上有大的发展之机。\u0000", "16,重点：此年容易因为面临的棘手问题，遇到的麻烦事，繁重的职责等因素，加紧学习、考证，或者容易找靠山化解自己的难题。此年工作中面临的文书工作不少，如投标等。\u0000", "17,重点：此年容易因为研究、学习、取证等因素，加紧学业，看更多的书，学更多的知识。\u0000", "18,重点：此年容易拿钱去学习，或者用钱购买一些证件，证书等，也容易购车、房、家居物品等。\u0000", "19,重点：此年容易因为感到自己经常遇到一些让自己很不爽的、工作和生活中的阻碍、竞争之事，而想通过学习、咨询等方式找到这种不顺和阻碍的答案。是一种不甘落后的表现，希望自己更加的进步而有了上进、学习之心。\u0000", "20,上班的命主，此年有升职、找到好工作的机遇！\u0000", "21,此年命主父亲容易有生病住院之事。\u0000", "22,此年命主父亲容易有官司是非之事。\u0000", "23,此年男性长辈健康不利，容易有身体疼痛难安之事，或者容易有心理难受之事。此年做生意的人容易生意业务改变！\u0000", "24,命主此年容易有不错的发财机会，努力争取会有不错的收获。\u0000", "25,重点提示：逢羊月（农历六月）或其前后、马月（农历五月）或其前后的月份容易有发财、升薪水等好事。\u0000", "26,此年事业至上有高升之象,未婚者恋爱顺利，已婚者感情稳定。\u0000", "27,此年长辈有一定的不利，许多注意身体健康。\u0000", "28,此年钱财容易有大的花费，破耗;此年宜多购置物品，不宜积攒钱财。\u0000", "29,此年虽然钱财有花费，但也有钱财机遇，务必好好争取。\u0000", "\u0000"]
-        };
-        //从上到下，对应的Key，顺序不能改变
-        let mData = this.pigData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
-        let text = this.pigData.ThreeTiaoZiLst;
-        //提前绘制
-        this.drawImage(mData, text, 2);
-        //猪年视频播放完毕
+
+        let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         let that = this;
+        let param = new URLSearchParams();
+        param.append('sex', this.sex);
+        param.append('address', this.address);
+        param.append('birthday', birthday);
+        this.axios.post(executeForecast, param)
+          .then(function (response) {
+            if (response.code === 200) {
+              that.pigData = response.data;
+              //从上到下，对应的Key，顺序不能改变
+              let mData = that.pigData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
+              let text = that.pigData.ThreeTiaoZiLst;
+              //提前绘制
+              this.drawImage(mData, text, 2);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+        //猪年视频播放完毕
         pigvideo.addEventListener("ended", function () {
           that.step = 8;
-        })
+        });
       },
       model1Handel() {
         this.model1 = !this.model1
