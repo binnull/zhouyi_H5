@@ -26,7 +26,8 @@ const devConfig = {
     historyApiFallback: true,
     noInfo: true,
     overlay: true,
-    public: 'localhost:8010'
+    public: 'localhost:80',
+    disableHostCheck: true,
   }
 }
 

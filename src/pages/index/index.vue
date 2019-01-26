@@ -133,6 +133,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import city from './img/province-city.json'
   import {
     executeForecast,
@@ -262,7 +263,7 @@
         param.append('sex', this.sex);
         param.append('address', this.address);
         param.append('birthday', birthday);
-        this.axios.post(executeForecast, param)
+        axios.post(executeForecast, param)
           .then(function (response) {
             if (response.code === 200) {
               that.dogData = response.data;
@@ -505,7 +506,7 @@
         param.append('sex', this.sex);
         param.append('address', this.address);
         param.append('birthday', birthday);
-        this.axios.post(executeForecast, param)
+        axios.post(executeForecast, param)
           .then(function (response) {
             if (response.code === 200) {
               that.pigData = response.data;

@@ -1,8 +1,19 @@
 <template>
-  <div>授权登陆中</div>
+  <div class="page-bg" :class="step>=7?'pig-bg':'dog-bg'">
+    <div class="page">
+      <!--加载动画开始-->
+      <div class="loading page-base" style="z-index: 1000">
+        <div class="loading-left"></div>
+        <div class="loadind-right"></div>
+        <div class="page-base loading-progress"></div>
+        <div class="progress-wall"><span>0%</span></div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+  import axios from 'axios'
   import {getWxAuthUrl, getUserInfo} from '../../api.js'
   import store from '../../store.js'
 
@@ -10,11 +21,11 @@
     name: "index",
     created() {
       // 检测会员有没有登录
-      if (!store.state.user) {
-        let ua = window.navigator.userAgent.toLowerCase()
+      if (!store.state.user.id) {
+        let ua = window.navigator.userAgent.toLowerCase();
         if (ua.match(/MicroMessenger/i) == 'micromessenger') {
           // 跳转到微信授权页面
-          this.axios.post(getWxAuthUrl)
+          axios.post(getWxAuthUrl)
             .then(function (response) {
               if (response.body.code === 200) {
                 window.location.href = response.header.url
@@ -32,7 +43,7 @@
     methods: {
       login() {
         // 通过cookie获取用户信息
-        this.axios.post(getUserInfo)
+        axios.post(getUserInfo)
           .then(function (response) {
             if (response.body.code === 200) {
               this.$store.commit('setUserInfo', response.header.UserInfoVo)
@@ -46,6 +57,6 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  @import "../index/index";
 </style>

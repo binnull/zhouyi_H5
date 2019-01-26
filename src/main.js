@@ -11,10 +11,6 @@ Vue.use(Popup);
 Vue.use(Picker);
 Vue.use(DatetimePicker);
 
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-
-Vue.use(VueAxios, axios);
 Vue.use(VueRouter);
 Vue.use(vClickOutside);
 
@@ -28,7 +24,7 @@ const router = new VueRouter({
 import store from './store.js';
 
 router.beforeEach((to, from, next) => {
-  if (!store.state.user && to.path != '/author') {
+  if (!store.state.user.id && to.path != '/author') {
     next('/author');
     return false
   }
