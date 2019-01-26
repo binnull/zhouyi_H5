@@ -13,7 +13,6 @@
 </template>
 
 <script>
-  import axios from 'axios'
   import {getWxAuthUrl, getUserInfo} from '../../api.js'
   import store from '../../store.js'
 
@@ -25,7 +24,7 @@
         let ua = window.navigator.userAgent.toLowerCase();
         if (ua.match(/MicroMessenger/i) == 'micromessenger') {
           // 跳转到微信授权页面
-          axios.post(getWxAuthUrl)
+          this.$http.post(getWxAuthUrl)
             .then(function (response) {
               if (response.body.code === 200) {
                 window.location.href = response.header.url
@@ -43,7 +42,7 @@
     methods: {
       login() {
         // 通过cookie获取用户信息
-        axios.post(getUserInfo)
+        this.$http.post(getUserInfo)
           .then(function (response) {
             if (response.body.code === 200) {
               this.$store.commit('setUserInfo', response.header.UserInfoVo)

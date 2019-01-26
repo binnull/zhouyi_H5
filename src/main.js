@@ -3,9 +3,19 @@ import App from './app.vue';
 import VueRouter from 'vue-router';
 import routes from './route.config.js';
 import * as vClickOutside from 'v-click-outside-x';
+import Axios from 'axios';
+import store from './store.js';
 
 import {Popup, Picker, DatetimePicker} from 'vant';
 import 'vant/lib/index.css';
+
+Vue.prototype.$http = Axios;
+Axios.interceptors.request.use(function(request) {
+  request.withCredentials = true
+  return request
+}, function(error) {
+  return Promise.reject(error)
+})
 
 Vue.use(Popup);
 Vue.use(Picker);
@@ -21,15 +31,14 @@ const router = new VueRouter({
   routes: routes
 });
 
-import store from './store.js';
-
+/*
 router.beforeEach((to, from, next) => {
   if (!store.state.user.id && to.path != '/author') {
     next('/author');
     return false
   }
   next()
-});
+});*/
 
 new Vue({
   el: '#app',
