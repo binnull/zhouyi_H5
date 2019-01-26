@@ -1,5 +1,5 @@
 <template>
-  <div class="page-bg" :class="step>=7?'pig-bg':'dog-bg'">
+  <div class="page-bg dog-bg">
     <div class="page">
       <!--加载动画开始-->
       <div class="loading page-base" style="z-index: 1000">
