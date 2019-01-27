@@ -258,11 +258,7 @@
       getDogData() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         let that = this;
-        let param = new URLSearchParams();
-        param.append('sex', this.sex);
-        param.append('address', this.location[0] + this.location[1]);
-        param.append('birthday', birthday);
-        this.$http.post(executeForecast, param)
+        this.$http.get(executeForecast+'?sex='+this.sex+'&address='+this.location[0] + this.location[1]+'&birthday='+birthday)
           .then(function (response) {
             if (response.code === 200) {
               that.dogData = response.data;
@@ -501,11 +497,7 @@
 
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         let that = this;
-        let param = new URLSearchParams();
-        param.append('sex', this.sex);
-        param.append('address', this.location[0] + this.location[1]);
-        param.append('birthday', birthday);
-        this.$http.post(executeForecast, param)
+        this.$http.post(executeForecast+'?sex='+this.sex+'&address='+this.location[0] + this.location[1]+'&birthday='+birthday)
           .then(function (response) {
             if (response.code === 200) {
               that.pigData = response.data;

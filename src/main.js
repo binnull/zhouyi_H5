@@ -31,13 +31,13 @@ const router = new VueRouter({
   routes: routes
 });
 
-// router.beforeEach((to, from, next) => {
-//   if (!store.state.user.id && to.path != '/author') {
-//     next('/author');
-//     return false
-//   }
-//   next()
-// });
+router.beforeEach((to, from, next) => {
+  if (!store.state.user.id && to.path != '/author') {
+    next('/author');
+    return false
+  }
+  next()
+});
 
 new Vue({
   el: '#app',

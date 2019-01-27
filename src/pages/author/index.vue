@@ -21,19 +21,23 @@
     created() {
       // 检测是否有code
       if (!this.$route.query.code) {
-        let ua = window.navigator.userAgent.toLowerCase();
-        if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-          // 跳转到微信授权页面
-          this.$http.post(getWxAuthUrl)
-            .then(function (response) {
-              if (response.body.code === 200) {
-                window.location.href = response.header.url
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-        }
+        // 跳转到微信授权页面
+        this.$http.get(getWxAuthUrl)
+          .then(function (response) {
+            console.log(response);
+            if (response.data.code === 200) {
+              window.location.href = response.data.data
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        // let ua = window.navigator.userAgent.toLowerCase();
+        // if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+        //
+        // }else {
+        //   console.log('环境不对')
+        // }
       } else {
         // 如果有code 获取用户信息
         this.login()
@@ -42,10 +46,10 @@
     methods: {
       login() {
         // 通过cookie获取用户信息
-        this.$http.post(getUserInfo)
+        this.$http.get(getUserInfo)
           .then(function (response) {
-            if (response.body.code === 200) {
-              this.$store.commit('setUserInfo', response.header.UserInfoVo);
+            if (response.data.code === 200) {
+              this.$store.commit('setUserInfo', response.data.UserInfoVo);
               //回到首页
               this.$router.push({
                 path: '/',
