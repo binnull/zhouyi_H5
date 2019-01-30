@@ -139,6 +139,7 @@
     getPayForecastTimesParam
   } from '../../api'
 
+  let wx = require('weixin-js-sdk');
   export default {
     name: 'index',
     data() {
@@ -175,8 +176,8 @@
             defaultIndex: 2
           }
         ],
-        minDate: new Date(1900, 1, 1),
-        maxDate: new Date(),
+        minDate: new Date(1970, 1, 1),
+        maxDate: new Date(2001, 11, 30),
         currentDate: new Date()
       }
     },
@@ -254,44 +255,76 @@
         picker.setColumnValues(1, city[values[0]]);
         this.location = picker.getValues();
       },
+      getPay() {
+        this.$http.get(getPayForecastTimesParam)
+          .then(function (response) {
+            if (response.data.code === 200) {
+              let args = response.data.data;
+              WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                  "appId": args.appId, //公众号名称，由商户传入
+                  "timestamp": args.timeStamp, // 支付签名时间戳，
+                  "nonceStr": args.nonceStr, // 支付签名随机串，
+                  "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
+                  "signType": 'MD5', // 签名方式
+                  "paySign": args.paySign, // 支付签名
+                },
+                function (res) {
+                  if (res.err_msg == "get_brand_wcpay_request：ok") {
+                    //支付成功后还是在当前页面吗
+                  } else {
+
+                  }
+                }
+              );
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
       //获取数据
       getDogData() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         let that = this;
-        this.$http.get(executeForecast+'?sex='+this.sex+'&address='+this.location[0] + this.location[1]+'&birthday='+birthday)
+        this.$http.get(executeForecast + '?sex=' + this.sex + '&address=' + this.location[0] + this.location[1] + '&birthday=' + birthday + '&forecast_year=2018')
           .then(function (response) {
-            if (response.code === 200) {
-              that.dogData = response.data;
+            if (response.data.code === -101) {
+              //未登录 前往授权
+              that.getPay();
+            }
+            if (response.data.code === 200) {
+              that.dogData = response.data.data;
               switch (that.dogData.RiZhu) {
                 case "甲":
-                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "乙":
-                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "丙":
-                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "丁":
-                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "戊":
-                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "己":
-                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "庚":
-                  this.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "辛":
-                  this.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "壬":
-                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "癸":
-                  this.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
               }
             }
@@ -491,31 +524,33 @@
 
       },
       playPigVideo() {
-        this.step = 7;
-        let pigvideo = document.getElementById('pigVideo');
-        pigvideo.play();
-
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         let that = this;
-        this.$http.post(executeForecast+'?sex='+this.sex+'&address='+this.location[0] + this.location[1]+'&birthday='+birthday)
+        this.$http.get(executeForecast + '?sex=' + this.sex + '&address=' + this.location[0] + this.location[1] + '&birthday=' + birthday + '&forecast_year=2019')
           .then(function (response) {
-            if (response.code === 200) {
-              that.pigData = response.data;
+            if (response.data.code === -105) {
+              //未登录 前往授权
+              that.getPay();
+            }
+            if (response.data.code === 200) {
+              that.step = 7;
+              let pigvideo = document.getElementById('pigVideo');
+              pigvideo.play();
+              that.pigData = response.data.data;
               //从上到下，对应的Key，顺序不能改变
               let mData = that.pigData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
               let text = that.pigData.ThreeTiaoZiLst;
               //提前绘制
-              this.drawImage(mData, text, 2);
+              that.drawImage(mData, text, 2);
+              //猪年视频播放完毕
+              pigvideo.addEventListener("ended", function () {
+                that.step = 8;
+              });
             }
           })
           .catch(function (error) {
             console.log(error);
           });
-
-        //猪年视频播放完毕
-        pigvideo.addEventListener("ended", function () {
-          that.step = 8;
-        });
       },
       model1Handel() {
         this.model1 = !this.model1

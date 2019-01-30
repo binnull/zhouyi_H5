@@ -19,41 +19,38 @@
   export default {
     name: "index",
     created() {
-      // 检测是否有code
-      if (!this.$route.query.code) {
-        // 跳转到微信授权页面
-        this.$http.get(getWxAuthUrl)
+      //先获取用户信息
+      this.login();
+    },
+    methods: {
+      login() {
+        // 通过cookie获取用户信息
+        let that = this;
+        this.$http.get(getUserInfo)
           .then(function (response) {
-            console.log(response);
+            if (response.data.code === -101) {
+              //未登录 前往授权
+              that.author();
+            }
             if (response.data.code === 200) {
-              window.location.href = response.data.data
+              //登录成功 保存个人信息
+              store.commit('setUserInfo', response.data.data);
+              //回到首页
+              that.$router.push({
+                path: '/',
+              });
             }
           })
           .catch(function (error) {
             console.log(error);
           });
-        // let ua = window.navigator.userAgent.toLowerCase();
-        // if (ua.match(/MicroMessenger/i) == 'micromessenger') {
-        //
-        // }else {
-        //   console.log('环境不对')
-        // }
-      } else {
-        // 如果有code 获取用户信息
-        this.login()
-      }
-    },
-    methods: {
-      login() {
-        // 通过cookie获取用户信息
-        this.$http.get(getUserInfo)
+      },
+      author() {
+        // 跳转到微信授权页面
+        this.$http.get(getWxAuthUrl)
           .then(function (response) {
             if (response.data.code === 200) {
-              this.$store.commit('setUserInfo', response.data.UserInfoVo);
-              //回到首页
-              this.$router.push({
-                path: '/',
-              })
+              window.location.href = response.data.data
             }
           })
           .catch(function (error) {
