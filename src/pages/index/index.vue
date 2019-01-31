@@ -24,7 +24,7 @@
       <!--第一页结束-->
       <!--第一个视频开始-->
       <div class="dog-video page-base" v-show="step===3" style="z-index: 900">
-        <video id="dogVideo" class="page-base" :src="dogVideo"></video>
+        <video id="dogVideo" class="page-base"></video>
       </div>
       <!--第一个视频结束-->
       <!--第二页开始-->
@@ -358,7 +358,7 @@
         document.getElementById('audio').pause();
         this.step = 3;
         let dogvideo = document.getElementById('dogVideo');
-        dogvideo.play();
+        dogvideo.play();  
         //狗年视频播放完毕
         let that = this;
         dogvideo.addEventListener("ended", function () {
@@ -569,6 +569,7 @@
         "paySign": args.paySign, // 支付签名
       },
       function (res) {
+        console.log(res)
         if (res.err_msg == "get_brand_wcpay_request：ok") {
           //支付成功后还是在当前页面吗
         } else {

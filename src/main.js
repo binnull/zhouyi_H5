@@ -9,6 +9,9 @@ import store from './store.js';
 import {Popup, Picker, DatetimePicker} from 'vant';
 import 'vant/lib/index.css';
 
+import VConsole from 'vconsole'
+var vConsole = new VConsole();
+
 Vue.prototype.$http = Axios;
 Axios.interceptors.request.use(function (request) {
   request.withCredentials = true

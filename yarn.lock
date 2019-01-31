@@ -6317,6 +6317,11 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
+vconsole@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/vconsole/-/vconsole-3.2.2.tgz#e5ac7ebe27a4903244cbc323db52336c5093d637"
+  integrity sha512-rnGXoQF9mhf/uBOSjGZWXGgcphTN81QoVLd3zGJAtG1HLGqck9oc8e/IhH2Ezej/UWPYS6FXgHdnrzAEY5fHKg==
+
 vendors@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.2.tgz#7fcb5eef9f5623b156bcea89ec37d63676f21801"
