@@ -10,25 +10,25 @@
       </div>
       <!--加载动画结束-->
       <!--第一页开始-->
-      <div class="first-page page-base" v-show="step===1||step===2||step===3" style="z-index: 800">
+      <div class="first-page page-base" v-show="step===1||step===2||step===3" style="z-index: 801">
         <div class="page-base first-page-back"></div>
         <div class="page-base first-page-dog"></div>
         <div class="page-base first-page-front"></div>
-        <div class="btn-bg" @click="playSong">
+        <div class="btn-bg" @touchstart="playSong">
           <div class="btn"></div>
         </div>
         <div class="first-page-curtain" :class="step===1||step===2?'play-move-up':''" v-show="step===1||step===2"></div>
         <div class="first-page-curtain first-page-curtain-over" v-show="step===3"></div>
-        <audio :src="song" id="audio" @ended="overAudio"></audio>
+        <!--<audio :src="song" id="audio" @ended="overAudio"></audio>-->
       </div>
       <!--第一页结束-->
       <!--第一个视频开始-->
-      <div class="dog-video page-base" v-show="step===3" style="z-index: 900">
-        <video id="dogVideo" class="page-base"></video>
+      <div class="dog-video" style="z-index: 900">
+        <video id="dogVideo" :src="dogVideo" :class="{'dog-video-show': step === 3}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第一个视频结束-->
       <!--第二页开始-->
-      <div class="first-page page-base" v-show="step===3||step===4" style="z-index: 800">
+      <div class="first-page page-base" v-show="step===3||step===4||step===5" style="z-index: 800">
         <div class="page-base first-page-back"></div>
         <div class="page-base first-page-dog"></div>
         <div class="page-base first-page-front"></div>
@@ -39,11 +39,11 @@
             <div class="location" @click="handelLocationClick()">{{location[0]}}&nbsp;{{location[1]}}</div>
           </div>
         </div>
-        <div class="btn-bg" @click="playSong1">
+        <div class="btn-bg" @touchstart="playSong1">
           <div class="btn"></div>
         </div>
         <div class="first-page-curtain first-page-curtain-over" v-show="step===4"></div>
-        <audio :src="song" id="audio1" @ended="overAudio1"></audio>
+        <!--<audio :src="song" id="audio1" @ended="overAudio1"></audio>-->
         <transition name="fade">
           <div class="wait-video page-base"
                v-show="downloadFlag===false&&audioFinish===true"><img :src="require('./img/black_loading.gif')"/></div>
@@ -73,21 +73,21 @@
       </div>
       <!--第二页结束-->
       <!--第二个视频开始-->
-      <div class="dog-video detail-dog page-base" v-show="step===4||step===5" style="z-index: 700">
-        <video id="randomVideo" class="page-base" ref="videos"></video>
+      <div class="dog-video detail-dog" v-show="step >= 4" style="z-index: 900">
+        <video id="randomVideo" ref="videos" :class="{'dog-video-show': step === 5}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第二个视频结束-->
       <!--狗年总结开始-->
-      <div class="result page-base" style="z-index: 800" v-show="step===6">
+      <div class="result page-base" style="z-index: 800" v-show="step===6||step===7">
         <img :src="dogResultImg" class="bg-img"/>
         <div class="more">
           <div class="more-bg more-bg-dog" @click="model1Handel"></div>
         </div>
         <div class="left-bottom-group">
-          <div class="again-btn again-btn-dog" @click="again"></div>
+          <div class="again-btn again-btn-dog" @touchstart="again"></div>
           <div class="save-btn save-btn-dog" @click="saveDogResult"></div>
         </div>
-        <div class="next-btn next-btn-dog" @click="playPigVideo"></div>
+        <div class="next-btn next-btn-dog" @touchstart="playPigVideo"></div>
         <transition name="fade">
           <div class="detail detail-dog page-base" v-show="model1">
             <div class="close" @click="model1Handel"></div>
@@ -101,8 +101,8 @@
       </div>
       <!--狗年总结结束-->
       <!--猪年视频开始-->
-      <div class="dog-video page-base" v-show="step===7" style="z-index: 700">
-        <video id="pigVideo" class="page-base" :src="pigVideo"></video>
+      <div class="dog-video" style="z-index: 900">
+        <video id="pigVideo" :src="pigVideo" :class="{'dog-video-show': step === 7}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
       </div>
       <!--猪年视频结束-->
       <!--猪年总结开始-->
@@ -134,6 +134,9 @@
 
 <script>
   import city from './img/province-city.json'
+  import dog_videomp4 from './img/dog_video.mp4'
+  import pig_videomp4 from './img/pig_video.mp4'
+
   import {
     executeForecast,
     getPayForecastTimesParam
@@ -146,12 +149,12 @@
     data() {
       return {
         step: 0,//当前动画进行到第几步
-        song: require('./img/luosheng.mp3'),//锣声
-        dogVideo: require('./img/dog_video.mp4'),
+        song:  require('./img/luosheng.mp3'),//锣声
+        dogVideo: dog_videomp4,
         randomVideo: '',
         downloadFlag: false,
         audioFinish: false,
-        pigVideo: require('./img/pig_video.mp4'),
+        pigVideo: pig_videomp4,
         dogResultImg: '',
         pigResultImg: '',
         sex: '男',
@@ -179,7 +182,8 @@
         ],
         minDate: new Date(1970, 1, 1),
         maxDate: new Date(2001, 11, 30),
-        currentDate: new Date()
+        currentDate: new Date(),
+        pigReady: false
       }
     },
     created: function () {
@@ -207,7 +211,7 @@
         require('./img/more_pig_result.png'),
         require('./img/qrcode.png'),
       ];
-      let videoAssets = [require('./img/luosheng.mp3'), require('./img/dog_video.mp4'), require('./img/pig_video.mp4')];
+      let videoAssets = [dog_videomp4, pig_videomp4];
       let that = this;
       let totalCount = imageAssets.length + videoAssets.length;
       //监听图片加载
@@ -238,7 +242,6 @@
       }
     },
     mounted() {
-      this.getPay();
     },
     methods: {
       handelSexClick() {
@@ -295,34 +298,34 @@
               that.dogData = response.data.data;
               switch (that.dogData.RiZhu) {
                 case "甲":
-                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "乙":
-                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "丙":
-                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "丁":
-                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "戊":
-                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "己":
-                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "庚":
-                  that.loadVideo('http://img.aidny.cn/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/1%E7%94%B2%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "辛":
-                  that.loadVideo('http://img.aidny.cn/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/2%E4%B9%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "壬":
-                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
                 case "癸":
-                  that.loadVideo('http://img.aidny.cn/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
+                  that.loadVideo('http://prod-www-annual-forecast.chuangkit.com/3%E4%B8%99%E6%97%A5%E5%B9%B2.mp4');
                   break;
               }
             }
@@ -333,16 +336,24 @@
       },
       //加载随机视频
       loadVideo: function (video) {
+        this.$http.get(video)
+          .then((res) => {
+            this.downloadFlag = true
+            this.$refs.videos.src = video;
+          })
+          /*
         let V = new Audio(video);
         let that = this;
         V.onloadedmetadata = function () {
           //判断是否要执行下一步
           that.downloadFlag = true;
           that.$refs.videos.src = V.src;
+        
           if (that.audioFinish === true && that.downloadFlag === true) {
             that.nextStep1();
           }
-        };
+        }
+        */
       },
       //加载界面过渡到第一页
       nextStep() {
@@ -354,43 +365,63 @@
       },
       //播放锣声
       playSong() {
-        document.getElementById('audio').play()
+        //document.getElementById('audio').play()
+        let dogvideo = document.getElementById('dogVideo');
+        dogvideo.play();
+        //狗年视频播放完毕
+        let that = this;
+        setTimeout(()=>{
+          this.step = 3;
+        }, 20)
+        dogvideo.addEventListener("ended", function () {
+          that.step = 4;
+        })
       },
       //锣声播放完毕，下一场景
       overAudio() {
+        /*
         document.getElementById('audio').pause();
         this.step = 3;
         let dogvideo = document.getElementById('dogVideo');
+        console.log(dogvideo)
         dogvideo.play();  
         //狗年视频播放完毕
         let that = this;
         dogvideo.addEventListener("ended", function () {
           that.step = 4;
-        })
+        })*/
       },
       //第二次播放锣声
       playSong1() {
         if (this.sex === '' || this.birthday === '' || this.location === '') {
           return;
         }
-        document.getElementById('audio1').play();
+        //document.getElementById('audio1').play();
         //获取数据
-        this.getDogData();
+        if(this.downloadFlag === true) { 
+          this.nextStep1();
+        } else {
+          this.audioFinish = true;
+          this.getDogData();
+        } 
       },
       //第二次锣声播放完毕，下一场景
       overAudio1() {
+        /*
         document.getElementById('audio1').pause();
         this.audioFinish = true;
         if (this.audioFinish === true && this.downloadFlag === true) {
           this.nextStep1();
-        }
+        }*/
       },
       //音频播放完或视频加载完执行  后完成者触发
       nextStep1() {
         this.audioFinish = false;//重置
-        this.step = 5;
         let randomVideo = document.getElementById('randomVideo');
         randomVideo.play();
+        setTimeout(()=>{
+          this.step = 5;
+        }, 100)
         let mData = this.dogData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
         let text = this.dogData.ThreeTiaoZiLst;
         //提前绘制
@@ -518,34 +549,42 @@
       // 保存猪年图片
       savePigResult() {
       },
-      playPigVideo() {
+      getPigVideoData() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
-        let that = this;
         this.$http.get(executeForecast + '?sex=' + this.sex + '&address=' + this.location[0] + this.location[1] + '&birthday=' + birthday + '&forecast_year=2019')
-          .then(function (response) {
+          .then( (response) => {
             if (response.data.code === -105) {
               //未登录 前往授权
-              that.getPay();
+              this.getPay();
             }
             if (response.data.code === 200) {
-              that.step = 7;
-              let pigvideo = document.getElementById('pigVideo');
-              pigvideo.play();
-              that.pigData = response.data.data;
+              this.pigReady = true;
+              this.pigData = response.data.data;
               //从上到下，对应的Key，顺序不能改变
-              let mData = that.pigData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
-              let text = that.pigData.ThreeTiaoZiLst;
+              let mData = this.pigData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
+              let text = this.pigData.ThreeTiaoZiLst;
               //提前绘制
-              that.drawImage(mData, text, 2);
-              //猪年视频播放完毕
-              pigvideo.addEventListener("ended", function () {
-                that.step = 8;
-              });
+              this.drawImage(mData, text, 2);
             }
           })
           .catch(function (error) {
             console.log(error);
           });
+      },
+      playPigVideo() {
+        if(this.pigReady) {
+          let pigvideo = document.getElementById('pigVideo');
+          pigvideo.play();
+          setTimeout(()=>{
+            this.step = 7;
+          }, 100)
+          pigvideo.addEventListener("ended", () => {
+            this.step = 8;
+          });
+        } else {
+          this.getPigVideoData()
+        }
+        
       },
       model1Handel() {
         this.model1 = !this.model1
@@ -565,7 +604,7 @@
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', {
         "appId": args.appId, //公众号名称，由商户传入
-        "timestamp": args.timeStamp, // 支付签名时间戳，
+        "timeStamp": args.timeStamp, // 支付签名时间戳，
         "nonceStr": args.nonceStr, // 支付签名随机串，
         "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
         "signType": args.signType, // 签名方式
@@ -575,6 +614,7 @@
         console.log(res)
         if (res.err_msg == "get_brand_wcpay_request：ok") {
           //支付成功后还是在当前页面吗
+          this.getPigVideoData()
         } else {
         }
       }
