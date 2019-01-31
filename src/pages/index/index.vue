@@ -138,8 +138,12 @@
     executeForecast,
     getPayForecastTimesParam
   } from '../../api'
+<<<<<<< HEAD
+
+=======
   let args = {}
   let wx = require('weixin-js-sdk');
+>>>>>>> f18bec06ab147cff5af9eb40b63e01a390587147
   export default {
     name: 'index',
     data() {
@@ -197,7 +201,6 @@
         require('./img/dog_result_bt1.png'),
         require('./img/dog_result_bt2.png'),
         require('./img/dog-result-btn3.png'),
-        require('./img/second_page_bg.jpg'),
         require('./img/pig_bg.png'),
         require('./img/pig_result_bg.jpg'),
         require('./img/pig_result_bt1.png'),
@@ -256,9 +259,33 @@
         this.location = picker.getValues();
       },
       getPay() {
+        let that = this;
         this.$http.get(getPayForecastTimesParam)
           .then(function (response) {
             if (response.data.code === 200) {
+<<<<<<< HEAD
+              let args = response.data.data;
+              console.log('args', args);
+              let params = {
+                "appId": args.appId, //公众号名称，由商户传入
+                "timeStamp": args.timeStamp, // 支付签名时间戳，
+                "nonceStr": args.nonceStr, // 支付签名随机串，
+                "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
+                "signType": args.signType, // 签名方式
+                "paySign": args.paySign, // 支付签名
+              };
+
+              console.log('params', params);
+              WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', params,
+                function (res) {
+                  if (res.err_msg == "get_brand_wcpay_request：ok") {
+                    //支付成功后还是在当前页面吗
+                    that.playPigVideo();
+                  } else {
+                    //支付失败
+                  }
+=======
               args = response.data.data;
               if (typeof WeixinJSBridge == 'undefined') {
                 if (document.addEventListener) {
@@ -266,6 +293,7 @@
                 } else if (document.attachEvent) {
                   document.attachEvent('WeixinJSBridgeReady', onBridgeReady)
                   document.attachEvent('onWeixinJSBridgeReady', onBridgeReady)
+>>>>>>> f18bec06ab147cff5af9eb40b63e01a390587147
                 }
               } else {
                 onBridgeReady()
@@ -273,6 +301,7 @@
             }
           })
           .catch(function (error) {
+            console.log("pay error");
             console.log(error);
           });
       },
@@ -523,7 +552,16 @@
           .then(function (response) {
             if (response.data.code === -105) {
               //未登录 前往授权
-              that.getPay();
+              if (typeof WeixinJSBridge == "undefined") {
+                if (document.addEventListener) {
+                  document.addEventListener('WeixinJSBridgeReady', that.getPay, false);
+                } else if (document.attachEvent) {
+                  document.attachEvent('WeixinJSBridgeReady', that.getPay);
+                  document.attachEvent('onWeixinJSBridgeReady', that.getPay);
+                }
+              } else {
+                that.getPay();
+              }
             }
             if (response.data.code === 200) {
               that.step = 7;
