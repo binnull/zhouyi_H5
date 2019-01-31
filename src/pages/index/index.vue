@@ -215,7 +215,8 @@
         img.src = imageAssets[i];
         img.onload = function () {
           that.loadProgress += 100 / totalCount;
-          if (that.loadProgress > 90) {
+          if (that.loadProgress > 85) {
+            //防止ios无法监听视频的加载卡住
             that.loadProgress = 100;
             that.nextStep();
           }
@@ -225,8 +226,9 @@
       for (let i = 0; i < videoAssets.length; i++) {
         let audio = new Audio(videoAssets[i]);
         audio.onloadedmetadata = function () {
+          //防止ios无法监听视频的加载卡住
           that.loadProgress += 100 / totalCount;
-          if (that.loadProgress > 90) {
+          if (that.loadProgress > 85) {
             that.loadProgress = 100;
             that.nextStep();
           }
