@@ -138,6 +138,7 @@
     executeForecast,
     getPayForecastTimesParam
   } from '../../api'
+
   let args = {}
   let wx = require('weixin-js-sdk');
   export default {
@@ -215,8 +216,7 @@
         img.src = imageAssets[i];
         img.onload = function () {
           that.loadProgress += 100 / totalCount;
-          if (that.loadProgress > 85) {
-            //防止ios无法监听视频的加载卡住
+          if (that.loadProgress > 99) {
             that.loadProgress = 100;
             that.nextStep();
           }
@@ -224,15 +224,17 @@
       }
       //监听声音/视频加载
       for (let i = 0; i < videoAssets.length; i++) {
-        let audio = new Audio(videoAssets[i]);
-        audio.onloadedmetadata = function () {
-          //防止ios无法监听视频的加载卡住
-          that.loadProgress += 100 / totalCount;
-          if (that.loadProgress > 85) {
-            that.loadProgress = 100;
-            that.nextStep();
-          }
-        };
+        this.$http.get(videoAssets[i])
+          .then(function (response) {
+            that.loadProgress += 100 / totalCount;
+            if (that.loadProgress > 99) {
+              that.loadProgress = 100;
+              that.nextStep();
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       }
     },
     methods: {
@@ -555,6 +557,7 @@
       }
     },
   }
+
   function onBridgeReady() {
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', {
