@@ -237,6 +237,9 @@
           });
       }
     },
+    mounted() {
+      this.getPay();
+    },
     methods: {
       handelSexClick() {
         this.sexPickerShow = !this.sexPickerShow;
