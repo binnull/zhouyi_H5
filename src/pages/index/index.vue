@@ -138,12 +138,8 @@
     executeForecast,
     getPayForecastTimesParam
   } from '../../api'
-<<<<<<< HEAD
-
-=======
   let args = {}
   let wx = require('weixin-js-sdk');
->>>>>>> f18bec06ab147cff5af9eb40b63e01a390587147
   export default {
     name: 'index',
     data() {
@@ -211,7 +207,6 @@
         require('./img/qrcode.png'),
       ];
       let videoAssets = [require('./img/luosheng.mp3'), require('./img/dog_video.mp4'), require('./img/pig_video.mp4')];
-
       let that = this;
       let totalCount = imageAssets.length + videoAssets.length;
       //监听图片加载
@@ -259,33 +254,9 @@
         this.location = picker.getValues();
       },
       getPay() {
-        let that = this;
         this.$http.get(getPayForecastTimesParam)
           .then(function (response) {
             if (response.data.code === 200) {
-<<<<<<< HEAD
-              let args = response.data.data;
-              console.log('args', args);
-              let params = {
-                "appId": args.appId, //公众号名称，由商户传入
-                "timeStamp": args.timeStamp, // 支付签名时间戳，
-                "nonceStr": args.nonceStr, // 支付签名随机串，
-                "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
-                "signType": args.signType, // 签名方式
-                "paySign": args.paySign, // 支付签名
-              };
-
-              console.log('params', params);
-              WeixinJSBridge.invoke(
-                'getBrandWCPayRequest', params,
-                function (res) {
-                  if (res.err_msg == "get_brand_wcpay_request：ok") {
-                    //支付成功后还是在当前页面吗
-                    that.playPigVideo();
-                  } else {
-                    //支付失败
-                  }
-=======
               args = response.data.data;
               if (typeof WeixinJSBridge == 'undefined') {
                 if (document.addEventListener) {
@@ -293,7 +264,6 @@
                 } else if (document.attachEvent) {
                   document.attachEvent('WeixinJSBridgeReady', onBridgeReady)
                   document.attachEvent('onWeixinJSBridgeReady', onBridgeReady)
->>>>>>> f18bec06ab147cff5af9eb40b63e01a390587147
                 }
               } else {
                 onBridgeReady()
@@ -301,7 +271,6 @@
             }
           })
           .catch(function (error) {
-            console.log("pay error");
             console.log(error);
           });
       },
@@ -433,7 +402,6 @@
         let w = 640 * multiple;
         let h = 1135 * multiple;
         let canvas = document.createElement('canvas');
-
         canvas.width = w;
         canvas.height = h;
         let ctx = canvas.getContext('2d');
@@ -539,11 +507,9 @@
       },
       //保存狗年结果
       saveDogResult() {
-
       },
       // 保存猪年图片
       savePigResult() {
-
       },
       playPigVideo() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
@@ -552,16 +518,7 @@
           .then(function (response) {
             if (response.data.code === -105) {
               //未登录 前往授权
-              if (typeof WeixinJSBridge == "undefined") {
-                if (document.addEventListener) {
-                  document.addEventListener('WeixinJSBridgeReady', that.getPay, false);
-                } else if (document.attachEvent) {
-                  document.attachEvent('WeixinJSBridgeReady', that.getPay);
-                  document.attachEvent('onWeixinJSBridgeReady', that.getPay);
-                }
-              } else {
-                that.getPay();
-              }
+              that.getPay();
             }
             if (response.data.code === 200) {
               that.step = 7;
@@ -610,7 +567,6 @@
         if (res.err_msg == "get_brand_wcpay_request：ok") {
           //支付成功后还是在当前页面吗
         } else {
-
         }
       }
     );
