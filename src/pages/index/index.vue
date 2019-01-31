@@ -139,7 +139,6 @@
     getPayForecastTimesParam
   } from '../../api'
 
-  let wx = require('weixin-js-sdk');
   export default {
     name: 'index',
     data() {
@@ -256,30 +255,37 @@
         this.location = picker.getValues();
       },
       getPay() {
+        let that = this;
         this.$http.get(getPayForecastTimesParam)
           .then(function (response) {
             if (response.data.code === 200) {
               let args = response.data.data;
+              console.log('args', args);
+              let params = {
+                "appId": args.appId, //公众号名称，由商户传入
+                "timeStamp": args.timeStamp, // 支付签名时间戳，
+                "nonceStr": args.nonceStr, // 支付签名随机串，
+                "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
+                "signType": args.signType, // 签名方式
+                "paySign": args.paySign, // 支付签名
+              };
+
+              console.log('params', params);
               WeixinJSBridge.invoke(
-                'getBrandWCPayRequest', {
-                  "appId": args.appId, //公众号名称，由商户传入
-                  "timestamp": args.timeStamp, // 支付签名时间戳，
-                  "nonceStr": args.nonceStr, // 支付签名随机串，
-                  "package": args.packageId, // 统一支付接口返回的prepay_id参数值，
-                  "signType": 'MD5', // 签名方式
-                  "paySign": args.paySign, // 支付签名
-                },
+                'getBrandWCPayRequest', params,
                 function (res) {
                   if (res.err_msg == "get_brand_wcpay_request：ok") {
                     //支付成功后还是在当前页面吗
+                    that.playPigVideo();
                   } else {
-
+                    //支付失败
                   }
                 }
               );
             }
           })
           .catch(function (error) {
+            console.log("pay error");
             console.log(error);
           });
       },
@@ -530,7 +536,16 @@
           .then(function (response) {
             if (response.data.code === -105) {
               //未登录 前往授权
-              that.getPay();
+              if (typeof WeixinJSBridge == "undefined") {
+                if (document.addEventListener) {
+                  document.addEventListener('WeixinJSBridgeReady', that.getPay, false);
+                } else if (document.attachEvent) {
+                  document.attachEvent('WeixinJSBridgeReady', that.getPay);
+                  document.attachEvent('onWeixinJSBridgeReady', that.getPay);
+                }
+              } else {
+                that.getPay();
+              }
             }
             if (response.data.code === 200) {
               that.step = 7;
