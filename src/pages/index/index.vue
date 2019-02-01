@@ -19,12 +19,13 @@
         </div>
         <div class="first-page-curtain" :class="step===1||step===2?'play-move-up':''" v-show="step===1||step===2"></div>
         <div class="first-page-curtain first-page-curtain-over" v-show="step===3"></div>
-        <!--<audio :src="song" id="audio" @ended="overAudio"></audio>-->
       </div>
       <!--第一页结束-->
       <!--第一个视频开始-->
       <div class="dog-video" style="z-index: 900">
-        <video id="dogVideo" :src="dogVideo" :class="{'dog-video-show': step === 3}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
+        <video id="dogVideo" :src="dogVideo" :class="{'dog-video-show': step === 3}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
+               preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第一个视频结束-->
       <!--第二页开始-->
@@ -40,10 +41,9 @@
           </div>
         </div>
         <div class="btn-bg" @touchstart="playSong1">
-          <div class="btn"></div>
+          <div :class="downloadFlag===true?'btn-kan':'btn'"></div>
         </div>
         <div class="first-page-curtain first-page-curtain-over" v-show="step===4"></div>
-        <!--<audio :src="song" id="audio1" @ended="overAudio1"></audio>-->
         <transition name="fade">
           <div class="wait-video page-base"
                v-show="downloadFlag===false&&audioFinish===true"><img :src="require('./img/black_loading.gif')"/></div>
@@ -74,7 +74,9 @@
       <!--第二页结束-->
       <!--第二个视频开始-->
       <div class="dog-video detail-dog" v-show="step >= 4" style="z-index: 900">
-        <video id="randomVideo" ref="videos" :class="{'dog-video-show': step === 5}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
+        <video id="randomVideo" ref="videos" :class="{'dog-video-show': step === 5}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
+               preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第二个视频结束-->
       <!--狗年总结开始-->
@@ -83,11 +85,13 @@
         <div class="more">
           <div class="more-bg more-bg-dog" @click="model1Handel"></div>
         </div>
+        <div class="again-btn again-btn-dog" @touchstart="again"></div>
         <div class="left-bottom-group">
-          <div class="again-btn again-btn-dog" @touchstart="again"></div>
-          <div class="save-btn save-btn-dog" @click="saveDogResult"></div>
+          <div class="again-btn-b"></div>
+          <div class="save-btn save-btn-dog"></div>
         </div>
-        <div class="next-btn next-btn-dog" @touchstart="playPigVideo"></div>
+        <div class="next-btn" :class="pigReady===false?'next-btn-dog':'next-btn-dog-pay'"
+             @touchstart="playPigVideo"></div>
         <transition name="fade">
           <div class="detail detail-dog page-base" v-show="model1">
             <div class="close" @click="model1Handel"></div>
@@ -102,7 +106,9 @@
       <!--狗年总结结束-->
       <!--猪年视频开始-->
       <div class="dog-video" style="z-index: 900">
-        <video id="pigVideo" :src="pigVideo" :class="{'dog-video-show': step === 7}" playsinline type="video/mp4" preload="auto" :width="1" :height="1"></video>
+        <video id="pigVideo" :src="pigVideo" :class="{'dog-video-show': step === 7}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
+               preload="auto" :width="1" :height="1"></video>
       </div>
       <!--猪年视频结束-->
       <!--猪年总结开始-->
@@ -111,9 +117,10 @@
         <div class="more">
           <div class="more-bg more-bg-pig" @click="model2Handel"></div>
         </div>
+        <div class="again-btn again-btn-pig" @click="again"></div>
         <div class="left-bottom-group">
-          <div class="again-btn again-btn-pig" @click="again"></div>
-          <div class="save-btn save-btn-pig" @click="savePigResult"></div>
+          <div class="again-btn-b"></div>
+          <div class="save-btn save-btn-pig"></div>
         </div>
         <div class="next-btn next-btn-pig"></div>
         <transition name="fade">
@@ -149,7 +156,7 @@
     data() {
       return {
         step: 0,//当前动画进行到第几步
-        song:  require('./img/luosheng.mp3'),//锣声
+        song: require('./img/luosheng.mp3'),//锣声
         dogVideo: dog_videomp4,
         randomVideo: '',
         downloadFlag: false,
@@ -159,7 +166,7 @@
         pigResultImg: '',
         sex: '男',
         birthday: ['1994', '04', '01', '15', '23'],
-        location: ['安徽', '滨州'],
+        location: ['安徽', '长丰'],
         model1: false,
         model2: false,
         loadProgress: 0,
@@ -175,7 +182,7 @@
             className: 'column1'
           },
           {
-            values: city['山东'],
+            values: city['安徽'],
             className: 'column2',
             defaultIndex: 2
           }
@@ -341,19 +348,6 @@
             this.downloadFlag = true
             this.$refs.videos.src = video;
           })
-          /*
-        let V = new Audio(video);
-        let that = this;
-        V.onloadedmetadata = function () {
-          //判断是否要执行下一步
-          that.downloadFlag = true;
-          that.$refs.videos.src = V.src;
-        
-          if (that.audioFinish === true && that.downloadFlag === true) {
-            that.nextStep1();
-          }
-        }
-        */
       },
       //加载界面过渡到第一页
       nextStep() {
@@ -361,65 +355,40 @@
         let that = this;
         setTimeout(function () {
           that.step = 2;
-        }, 5000);
+        }, 3000);
       },
       //播放锣声
       playSong() {
-        //document.getElementById('audio').play()
         let dogvideo = document.getElementById('dogVideo');
         dogvideo.play();
         //狗年视频播放完毕
         let that = this;
-        setTimeout(()=>{
+        setTimeout(() => {
           this.step = 3;
         }, 20)
         dogvideo.addEventListener("ended", function () {
           that.step = 4;
         })
       },
-      //锣声播放完毕，下一场景
-      overAudio() {
-        /*
-        document.getElementById('audio').pause();
-        this.step = 3;
-        let dogvideo = document.getElementById('dogVideo');
-        console.log(dogvideo)
-        dogvideo.play();  
-        //狗年视频播放完毕
-        let that = this;
-        dogvideo.addEventListener("ended", function () {
-          that.step = 4;
-        })*/
-      },
       //第二次播放锣声
       playSong1() {
         if (this.sex === '' || this.birthday === '' || this.location === '') {
           return;
         }
-        //document.getElementById('audio1').play();
         //获取数据
-        if(this.downloadFlag === true) { 
+        if (this.downloadFlag === true) {
           this.nextStep1();
         } else {
           this.audioFinish = true;
           this.getDogData();
-        } 
-      },
-      //第二次锣声播放完毕，下一场景
-      overAudio1() {
-        /*
-        document.getElementById('audio1').pause();
-        this.audioFinish = true;
-        if (this.audioFinish === true && this.downloadFlag === true) {
-          this.nextStep1();
-        }*/
+        }
       },
       //音频播放完或视频加载完执行  后完成者触发
       nextStep1() {
         this.audioFinish = false;//重置
         let randomVideo = document.getElementById('randomVideo');
         randomVideo.play();
-        setTimeout(()=>{
+        setTimeout(() => {
           this.step = 5;
         }, 100)
         let mData = this.dogData.LiuShuZhi.split(','); //数据 顺序不能改变 财道 事业 婚姻 健康 贵人 快乐
@@ -543,16 +512,10 @@
       again() {
         this.step = 2;
       },
-      //保存狗年结果
-      saveDogResult() {
-      },
-      // 保存猪年图片
-      savePigResult() {
-      },
       getPigVideoData() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
         this.$http.get(executeForecast + '?sex=' + this.sex + '&address=' + this.location[0] + this.location[1] + '&birthday=' + birthday + '&forecast_year=2019')
-          .then( (response) => {
+          .then((response) => {
             if (response.data.code === -105) {
               //未登录 前往授权
               this.getPay();
@@ -572,10 +535,10 @@
           });
       },
       playPigVideo() {
-        if(this.pigReady) {
+        if (this.pigReady) {
           let pigvideo = document.getElementById('pigVideo');
           pigvideo.play();
-          setTimeout(()=>{
+          setTimeout(() => {
             this.step = 7;
           }, 100)
           pigvideo.addEventListener("ended", () => {
@@ -584,7 +547,54 @@
         } else {
           this.getPigVideoData()
         }
-        
+
+      },
+      //微信分享
+      wxShare() {
+        //获取分享的接口暂时还没有 后端放假了。。。
+        this.$http.get(getPayForecastTimesParam)
+          .then((res) => {
+            if (response.data.code === 200) {
+              wx.config({
+                debug: false, // 开启调试模式,
+                appId: response.data.data.appId, // 必填
+                timestamp: response.data.data.timeStamp, // 必填，生成签名的时间戳
+                nonceStr: response.data.data.nonceStr, // 必填，生成签名的随机串
+                signature: response.data.data.signature,// 必填，签名，见附录1
+                jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+              });
+              //处理验证失败的信息
+              wx.error(function (res) {
+                logUtil.printLog('验证失败返回的信息:', res);
+              });
+              //处理验证成功的信息
+              wx.ready(function () {
+                //分享到朋友圈
+                wx.onMenuShareTimeline({
+                  title: "《说唱先知》你有一份狗年报告等待查收", // 分享标题
+                  link: window.location.href.split('#')[0], // 分享链接
+                  imgUrl: require("./img/share.jpg"), // 分享图标
+                  success: function (res) {
+                  },
+                  cancel: function (res) {
+                  }
+                });
+                //分享给朋友
+                wx.onMenuShareAppMessage({
+                  title: "《说唱先知》你有一份狗年报告等待查收", // 分享标题
+                  desc: "呦呦切克闹，狗年报告来一套", // 分享描述
+                  link: window.location.href.split('#')[0], // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                  imgUrl: require("./img/share.jpg"), // 分享图标
+                  type: '', // 分享类型,music、video或link，不填默认为link
+                  dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                  success: function (res) {
+                  },
+                  cancel: function (res) {
+                  }
+                });
+              });
+            }
+          })
       },
       model1Handel() {
         this.model1 = !this.model1
@@ -613,7 +623,7 @@
       function (res) {
         console.log(res)
         if (res.err_msg == "get_brand_wcpay_request：ok") {
-          //支付成功后还是在当前页面吗
+          //支付成功后再获取数据
           this.getPigVideoData()
         } else {
         }
