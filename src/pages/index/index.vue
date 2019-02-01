@@ -161,7 +161,7 @@
         pigResultImg: '',
         sex: '男',
         birthday: ['1994', '04', '01', '15', '23'],
-        location: ['安徽', '滨州'],
+        location: ['安徽', '长丰'],
         model1: false,
         model2: false,
         loadProgress: 0,
@@ -177,7 +177,7 @@
             className: 'column1'
           },
           {
-            values: city['山东'],
+            values: city['安徽'],
             className: 'column2',
             defaultIndex: 2
           }
@@ -549,6 +549,53 @@
           this.getPigVideoData()
         }
 
+      },
+      //微信分享
+      wxShare() {
+        //获取分享的接口暂时还没有 后端放假了。。。
+        this.$http.get(getPayForecastTimesParam)
+          .then((res) => {
+            if (response.data.code === 200) {
+              wx.config({
+                debug: false, // 开启调试模式,
+                appId: response.data.data.appId, // 必填
+                timestamp: response.data.data.timeStamp, // 必填，生成签名的时间戳
+                nonceStr: response.data.data.nonceStr, // 必填，生成签名的随机串
+                signature: response.data.data.signature,// 必填，签名，见附录1
+                jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+              });
+              //处理验证失败的信息
+              wx.error(function (res) {
+                logUtil.printLog('验证失败返回的信息:', res);
+              });
+              //处理验证成功的信息
+              wx.ready(function () {
+                //分享到朋友圈
+                wx.onMenuShareTimeline({
+                  title: "《说唱先知》你有一份狗年报告等待查收", // 分享标题
+                  link: window.location.href.split('#')[0], // 分享链接
+                  imgUrl: require("./img/share.jpg"), // 分享图标
+                  success: function (res) {
+                  },
+                  cancel: function (res) {
+                  }
+                });
+                //分享给朋友
+                wx.onMenuShareAppMessage({
+                  title: "《说唱先知》你有一份狗年报告等待查收", // 分享标题
+                  desc: "呦呦切克闹，狗年报告来一套", // 分享描述
+                  link: window.location.href.split('#')[0], // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                  imgUrl: require("./img/share.jpg"), // 分享图标
+                  type: '', // 分享类型,music、video或link，不填默认为link
+                  dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                  success: function (res) {
+                  },
+                  cancel: function (res) {
+                  }
+                });
+              });
+            }
+          })
       },
       model1Handel() {
         this.model1 = !this.model1
