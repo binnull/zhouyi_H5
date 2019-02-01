@@ -83,9 +83,10 @@
         <div class="more">
           <div class="more-bg more-bg-dog" @click="model1Handel"></div>
         </div>
+        <div class="again-btn again-btn-dog" @touchstart="again"></div>
         <div class="left-bottom-group">
-          <div class="again-btn again-btn-dog" @touchstart="again"></div>
-          <div class="save-btn save-btn-dog" @click="saveDogResult"></div>
+          <div class="again-btn-b"></div>
+          <div class="save-btn save-btn-dog"></div>
         </div>
         <div class="next-btn" :class="pigReady===false?'next-btn-dog':'next-btn-dog-pay'"
              @touchstart="playPigVideo"></div>
@@ -113,9 +114,10 @@
         <div class="more">
           <div class="more-bg more-bg-pig" @click="model2Handel"></div>
         </div>
+        <div class="again-btn again-btn-pig" @click="again"></div>
         <div class="left-bottom-group">
-          <div class="again-btn again-btn-pig" @click="again"></div>
-          <div class="save-btn save-btn-pig" @click="savePigResult"></div>
+          <div class="again-btn-b"></div>
+          <div class="save-btn save-btn-pig"></div>
         </div>
         <div class="next-btn next-btn-pig"></div>
         <transition name="fade">
@@ -506,12 +508,6 @@
       //再来一次
       again() {
         this.step = 2;
-      },
-      //保存狗年结果
-      saveDogResult() {
-      },
-      // 保存猪年图片
-      savePigResult() {
       },
       getPigVideoData() {
         let birthday = this.birthday[0] + '-' + this.birthday[1] + '-' + this.birthday[2] + ' ' + this.birthday[3] + ':' + this.birthday[4] + ':00';
