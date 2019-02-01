@@ -23,7 +23,8 @@
       <!--第一页结束-->
       <!--第一个视频开始-->
       <div class="dog-video" style="z-index: 900">
-        <video id="dogVideo" :src="dogVideo" :class="{'dog-video-show': step === 3}" playsinline type="video/mp4"
+        <video id="dogVideo" :src="dogVideo" :class="{'dog-video-show': step === 3}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
                preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第一个视频结束-->
@@ -73,7 +74,8 @@
       <!--第二页结束-->
       <!--第二个视频开始-->
       <div class="dog-video detail-dog" v-show="step >= 4" style="z-index: 900">
-        <video id="randomVideo" ref="videos" :class="{'dog-video-show': step === 5}" playsinline type="video/mp4"
+        <video id="randomVideo" ref="videos" :class="{'dog-video-show': step === 5}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
                preload="auto" :width="1" :height="1"></video>
       </div>
       <!--第二个视频结束-->
@@ -104,7 +106,8 @@
       <!--狗年总结结束-->
       <!--猪年视频开始-->
       <div class="dog-video" style="z-index: 900">
-        <video id="pigVideo" :src="pigVideo" :class="{'dog-video-show': step === 7}" playsinline type="video/mp4"
+        <video id="pigVideo" :src="pigVideo" :class="{'dog-video-show': step === 7}" x5-video-player-type="h5"
+               x5-video-player-fullscreen="true" webkit-playsinline="true" playsinline="true" type="video/mp4"
                preload="auto" :width="1" :height="1"></video>
       </div>
       <!--猪年视频结束-->
